@@ -2,9 +2,11 @@ const { User } = require('../db/userModel')
 const { ConflictError } = require('../helpers/errors')
 const {
   userRegistration,
+  tokenVerification,
   userLogin,
   userLogOut,
   updateAvatar,
+  reVerify,
 } = require('../services/authService')
 
 const registrationController = async (req, res) => {
@@ -20,7 +22,7 @@ const registrationController = async (req, res) => {
 
 const loginController = async (req, res) => {
   const { email, password } = req.body
-
+  console.log(email, password)
   const login = await userLogin(email, password)
 
   res.status(200).json(login)
@@ -69,6 +71,39 @@ const updateAvatarController = async (req, res) => {
   res.json({ avatarURL, status: 'success' })
 }
 
+const reVerifyController = async (req, res) => {
+  const { email } = req.body
+  console.log(email)
+  if (!email) {
+    return {
+      code: 400,
+      status: 'Bad request',
+      message: 'missing required field email',
+    }
+  }
+  const user = await User.findOne({ email })
+  console.log(user)
+  if (user.verify) {
+    res.json({
+      code: 400,
+      status: 'Bad request',
+      message: 'User is already verified',
+    })
+  }
+  const message = await reVerify(email)
+  // console.log(message)
+  res.json({ message, status: 'success' })
+}
+
+const verificationTokenController = async (req, res) => {
+  const { verificationToken } = req.params
+  const result = await tokenVerification(verificationToken)
+  if (!result) {
+    res.json({ code: 404, status: 'No user found' })
+  }
+  res.json({ result, status: 'success' })
+}
+
 module.exports = {
   registrationController,
   loginController,
@@ -76,4 +111,6 @@ module.exports = {
   getCurrentUserController,
   subscriptionController,
   updateAvatarController,
+  verificationTokenController,
+  reVerifyController,
 }

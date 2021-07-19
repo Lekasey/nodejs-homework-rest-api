@@ -7,7 +7,7 @@ module.exports = {
       email: Joi.string()
         .email({
           minDomainSegments: 2,
-          tlds: { allow: ['com', 'net'] },
+          tlds: { allow: ['com', 'net', 'ru'] },
         })
         .required(),
       password: Joi.string().required(),
