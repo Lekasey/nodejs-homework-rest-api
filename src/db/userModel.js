@@ -24,6 +24,14 @@ const schemaUser = new mongoose.Schema({
     type: String,
     default: null,
   },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verifyToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  },
 })
 
 schemaUser.pre('save', async function () {

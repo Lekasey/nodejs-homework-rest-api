@@ -5,6 +5,8 @@ const {
   getCurrentUserController,
   subscriptionController,
   updateAvatarController,
+  verificationTokenController,
+  reVerifyController,
 } = require('../controllers/authControllers')
 const express = require('express')
 const router = new express.Router()
@@ -50,6 +52,11 @@ router.patch(
   authMiddleware,
   subscriptionCheckMiddleware,
   asyncWrapper(subscriptionController),
+)
+router.post('/verify', asyncWrapper(reVerifyController))
+router.get(
+  '/verify/:verificationToken',
+  asyncWrapper(verificationTokenController),
 )
 
 module.exports = {
